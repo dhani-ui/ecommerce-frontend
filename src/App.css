@@ -78,3 +78,20 @@ h1, h2 { margin-bottom: 1.5rem; color: var(--text-main); }
 .btn-edit:hover { background-color: #2563eb; }
 .btn-delete { background-color: #ef4444; } /* Warna Merah */
 .btn-delete:hover { background-color: #dc2626; }
+/* --- TOMBOL ADD TO CART --- */
+.btn-cart {
+  background-color: #10b981; /* Warna hijau modern */
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+  margin-top: 10px;
+  font-size: 1rem;
+}
+.btn-cart:hover {
+  background-color: #059669;
+}

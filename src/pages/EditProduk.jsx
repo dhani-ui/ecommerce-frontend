@@ -3,24 +3,25 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export default function EditProduk() {
-  const { id } = useParams(); // Mengambil ID dari URL
+  const { id } = useParams();
   const navigate = useNavigate();
   
+  // 1. Tambahkan harga: 0 di state awal
   const [formData, setFormData] = useState({
-    nama_barang: '', kuantiti: 0, tanggal_masuk: '', tanggal_keluar: '', gambar_barang: ''
+    nama_barang: '', kuantiti: 0, harga: 0, tanggal_masuk: '', tanggal_keluar: '', gambar_barang: ''
   });
 
-  // Ambil data lama saat halaman dimuat
   useEffect(() => {
     axios.get('http://localhost:8080/api/barang')
       .then(response => {
         const dataBarang = response.data || [];
         const barangEdit = dataBarang.find(b => b.id === parseInt(id));
         if (barangEdit) {
-          // Format tanggal ke YYYY-MM-DD agar pas dengan input type="date"
+          // 2. Masukkan data harga dari database saat form dimuat
           setFormData({
             nama_barang: barangEdit.nama_barang,
             kuantiti: barangEdit.kuantiti,
+            harga: barangEdit.harga || 0, // Tarik data harga
             tanggal_masuk: barangEdit.tanggal_masuk ? barangEdit.tanggal_masuk.substring(0, 10) : '',
             tanggal_keluar: barangEdit.tanggal_keluar ? barangEdit.tanggal_keluar.substring(0, 10) : '',
             gambar_barang: barangEdit.gambar_barang || ''
@@ -34,7 +35,8 @@ export default function EditProduk() {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name === 'kuantiti' ? parseInt(value) || 0 : value
+      // 3. Pastikan input harga (dan kuantiti) diubah menjadi angka (integer)
+      [name]: (name === 'kuantiti' || name === 'harga') ? parseInt(value) || 0 : value
     });
   };
 
@@ -61,8 +63,14 @@ export default function EditProduk() {
             <input type="text" name="nama_barang" value={formData.nama_barang} onChange={handleChange} required />
           </div>
 
+          {/* 4. Tambahkan Input HTML untuk Harga */}
           <div className="form-group">
-            <label>Kuantiti:</label>
+            <label>Harga (Rp):</label>
+            <input type="number" name="harga" value={formData.harga} onChange={handleChange} required min="0" />
+          </div>
+
+          <div className="form-group">
+            <label>Kuantiti (Stok):</label>
             <input type="number" name="kuantiti" value={formData.kuantiti} onChange={handleChange} required min="0" />
           </div>
 
@@ -79,6 +87,9 @@ export default function EditProduk() {
           <div className="form-group">
             <label>URL Gambar:</label>
             <input type="text" name="gambar_barang" value={formData.gambar_barang} onChange={handleChange} />
+            <small style={{ color: '#6b7280', marginTop: '5px' }}>
+              *Jika sebelumnya menggunakan gambar upload, biarkan teks (/uploads/...) ini apa adanya.
+            </small>
           </div>
 
           <button type="submit" className="btn-submit" style={{ backgroundColor: '#3b82f6' }}>
